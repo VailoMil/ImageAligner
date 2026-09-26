@@ -33,23 +33,6 @@
 
 ---
 
-## Архитектура
-
-ImageAligner.slnx
-├── src/
-│   ├── ImageAligner.Core/       — вся логика (библиотека классов)
-│   │   ├── Models/              — Contour, AlignOptions, CropOptions, AlignResult
-│   │   ├── Imaging/             — IImageAligner, ImageAligner, OverlayRenderer
-│   │   ├── Settings/            — AppSettings, JsonSettingsStore
-│   │   ├── Commands/            — CommandLineOptions
-│   │   └── Events/              — AlignProgressEventArgs
-│   ├── ImageAligner.Cli/        — консольная оболочка
-│   └── ImageAligner.Wpf/        — WPF-приложение
-│       └── ViewModels/          — MainViewModel (MVVM)
-└── tests/
-    └── ImageAligner.Tests/      — xUnit-тесты
-
-
 Логика вынесена в отдельную библиотеку `ImageAligner.Core`, которая не зависит от UI. Её можно подключить к Console, WinForms, WPF, MAUI, Avalonia.
 
 ---
