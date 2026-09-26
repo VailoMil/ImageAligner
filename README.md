@@ -1,0 +1,135 @@
+# ImageAligner
+
+Инструмент **полу-автоматического выравнивания изображения** с центровкой и обрезкой краёв.
+
+Проект ориентирован на обработку сканов (билеты, визитки, документы), полученных со сканера: изображение может быть повёрнуто, фон — неоднородным, а размер — очень большим.
+
+---
+
+## Возможности
+
+- 📷 Загрузка изображения из файла или через командную строку
+- 🔍 Поиск контура изображения и подсветка его на превью
+- 📐 Выравнивание по одной из граней контура
+- 🔄 Свободное вращение на произвольный угол
+- 🎯 Центровка выделенного изображения в кадре
+- ✂️ Обрезка по контуру на N пикселей
+- 💾 Сохранение результата
+- ⚙️ Пользовательские настройки (тема, цвет, режим работы)
+- ⌨️ Горячие клавиши, справка по F1
+- 🧪 Юнит-тесты (xUnit)
+- 🖥️ Консольный запуск через параметры командной строки
+
+---
+
+## Стек
+
+- **.NET 10** / C#
+- **WPF** — графический интерфейс
+- **OpenCvSharp4** — обработка изображений (детекция контура, поворот, кроп)
+- **System.Drawing.Common** — работа с растровыми изображениями
+- **CommunityToolkit.Mvvm** — MVVM в WPF
+- **xUnit** — тестирование
+
+---
+
+## Архитектура
+
+ImageAligner.slnx
+├── src/
+│   ├── ImageAligner.Core/       — вся логика (библиотека классов)
+│   │   ├── Models/              — Contour, AlignOptions, CropOptions, AlignResult
+│   │   ├── Imaging/             — IImageAligner, ImageAligner, OverlayRenderer
+│   │   ├── Settings/            — AppSettings, JsonSettingsStore
+│   │   ├── Commands/            — CommandLineOptions
+│   │   └── Events/              — AlignProgressEventArgs
+│   ├── ImageAligner.Cli/        — консольная оболочка
+│   └── ImageAligner.Wpf/        — WPF-приложение
+│       └── ViewModels/          — MainViewModel (MVVM)
+└── tests/
+    └── ImageAligner.Tests/      — xUnit-тесты
+
+
+Логика вынесена в отдельную библиотеку `ImageAligner.Core`, которая не зависит от UI. Её можно подключить к Console, WinForms, WPF, MAUI, Avalonia.
+
+---
+
+## Сборка и запуск
+
+dotnet restore ImageAligner.slnx
+dotnet build   ImageAligner.slnx
+dotnet test    ImageAligner.slnx
+
+
+### CLI
+
+# Справка
+dotnet run --project src\ImageAligner.Cli -- --help
+
+# Только найти и подсветить контур
+dotnet run --project src\ImageAligner.Cli -- --input samples\metro-600dpi.png --detect-only --output contour.png
+
+# Полный цикл: выровнять, отцентрировать, обрезать на 30 px
+dotnet run --project src\ImageAligner.Cli -- --input samples\metro-600dpi.png --output aligned.png --crop 30
+
+# Свободное вращение
+dotnet run --project src\ImageAligner.Cli -- --input samples\metro-600dpi.png --output rotated.png --rotate -3.5
+
+
+### GUI (WPF)
+
+dotnet run --project src\ImageAligner.Wpf
+
+---
+
+## Горячие клавиши
+
+| Клавиша | Действие |
+|---|---|
+| **F1** | Справка |
+| **Ctrl+O** | Открыть изображение |
+| **Ctrl+S** | Сохранить результат |
+| **D** | Найти контур |
+| **A** | Выровнять |
+| **C** | Обрезать по контуру |
+| **R** | Свободное вращение (диалог ввода угла) |
+
+---
+
+## Параметры командной строки
+
+| Параметр | Описание |
+|---|---|
+| `--input <file>` | Путь к исходному изображению (обязательный) |
+| `--output <file>` | Путь для сохранения результата |
+| `--detect-only` | Только найти контур и подсветить его |
+| `--rotate <deg>` | Свободное вращение на указанный угол |
+| `--crop <px>` | Обрезка по контуру на N пикселей |
+| `--mode <mode>` | Режим работы: `SemiAuto`, `Auto`, `Manual` |
+| `-h`, `--help` | Показать справку |
+
+---
+
+## Тестирование
+
+dotnet test ImageAligner.slnx
+
+Тесты проверяют:
+
+- нахождение прямоугольного контура на синтетическом изображении,
+- парсинг параметров командной строки.
+
+---
+
+## Скриншоты
+
+_(добавьте свои скриншоты в папку `docs/` и вставьте сюда)_
+
+![Главное окно](docs/main-window.png)
+![Результат выравнивания](docs/aligned.png)
+
+---
+
+## Лицензия
+
+Учебный проект. Свободно используйте в образовательных целях.
