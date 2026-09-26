@@ -1,0 +1,151 @@
+﻿<Window x:Class="ImageAligner.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ImageAligner — полу-автоматическое выравнивание"
+        Height="760" Width="1280"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.InputBindings>
+        <KeyBinding Key="F1" Command="{Binding HelpCommand}"/>
+        <KeyBinding Key="O"  Command="{Binding OpenCommand}"   Modifiers="Control"/>
+        <KeyBinding Key="S"  Command="{Binding SaveCommand}"   Modifiers="Control"/>
+        <KeyBinding Key="D"  Command="{Binding DetectCommand}"/>
+        <KeyBinding Key="A"  Command="{Binding AlignCommand}"/>
+        <KeyBinding Key="C"  Command="{Binding CropCommand}"/>
+        <KeyBinding Key="R"  Command="{Binding RotateCommand}"/>
+    </Window.InputBindings>
+
+    <DockPanel>
+
+        <!-- Верхнее меню -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Открыть…"  Command="{Binding OpenCommand}"  InputGestureText="Ctrl+O"/>
+                <MenuItem Header="_Сохранить…" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S"/>
+                <Separator/>
+                <MenuItem Header="_Выход" Click="OnExitClick"/>
+            </MenuItem>
+
+            <MenuItem Header="_Изображение">
+                <MenuItem Header="Найти _контур"   Command="{Binding DetectCommand}" InputGestureText="D"/>
+                <MenuItem Header="_Выровнять"      Command="{Binding AlignCommand}"  InputGestureText="A"/>
+                <MenuItem Header="Об_резать"       Command="{Binding CropCommand}"   InputGestureText="C"/>
+                <MenuItem Header="_Повернуть…"     Command="{Binding RotateCommand}" InputGestureText="R"/>
+            </MenuItem>
+
+            <MenuItem Header="_Вид">
+                <MenuItem Header="_Тёмная тема" IsCheckable="True" IsChecked="True"/>
+                <MenuItem Header="_Светлая тема" IsCheckable="True"/>
+            </MenuItem>
+
+            <MenuItem Header="_Справка">
+                <MenuItem Header="Управление и параметры" Command="{Binding HelpCommand}" InputGestureText="F1"/>
+                <MenuItem Header="О программе" Click="OnAboutClick"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Тулбар -->
+        <Border DockPanel.Dock="Top" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Margin="8,8">
+                <Button Content="📂 Открыть"   Command="{Binding OpenCommand}"  ToolTip="Ctrl+O"/>
+                <Button Content="🔍 Контур"    Command="{Binding DetectCommand}" ToolTip="D"/>
+                <Button Content="📐 Выровнять" Command="{Binding AlignCommand}"  ToolTip="A"/>
+                <Button Content="✂ Обрезать"   Command="{Binding CropCommand}"   ToolTip="C"/>
+                <Button Content="🔄 Повернуть" Command="{Binding RotateCommand}" ToolTip="R"/>
+                <Button Content="💾 Сохранить" Command="{Binding SaveCommand}"   ToolTip="Ctrl+S"/>
+                <Separator Margin="8,0"/>
+                <Button Content="❓ Справка"   Command="{Binding HelpCommand}"   ToolTip="F1"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Статус-бар -->
+        <Border DockPanel.Dock="Bottom" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+            <Grid Margin="12,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Status}"
+                           Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Grid.Column="1" Text="{Binding Settings.Mode, StringFormat=Режим: {0}}"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+            </Grid>
+        </Border>
+
+        <!-- Панель настроек справа -->
+        <Border DockPanel.Dock="Right" Width="220"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0">
+            <StackPanel Margin="12">
+                <TextBlock Text="Настройки" FontSize="15" FontWeight="SemiBold"
+                           Margin="0,0,0,12"/>
+
+                <TextBlock Text="Тема" Margin="0,4,0,2"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+                <ComboBox SelectedIndex="0" Margin="0,0,0,12">
+                    <ComboBoxItem Content="Тёмная"/>
+                    <ComboBoxItem Content="Светлая"/>
+                </ComboBox>
+
+                <TextBlock Text="Режим работы" Margin="0,4,0,2"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+                <ComboBox SelectedItem="{Binding Settings.Mode}" Margin="0,0,0,12">
+                    <ComboBoxItem Content="SemiAuto"/>
+                    <ComboBoxItem Content="Auto"/>
+                    <ComboBoxItem Content="Manual"/>
+                </ComboBox>
+
+                <TextBlock Text="Обрезка, px" Margin="0,4,0,2"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+                <TextBox Text="{Binding Settings.CropPadding}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="MaxWorkingSize" Margin="0,4,0,2"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+                <TextBox Text="{Binding Settings.MaxWorkingSize}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="MinContourAreaRatio" Margin="0,4,0,2"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+                <TextBox Text="{Binding Settings.MinContourAreaRatio}" Margin="0,0,0,12"/>
+
+                <Button Content="Сохранить настройки"
+                        Command="{Binding SaveSettingsCommand}"
+                        Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Основная область: три панели -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Исходник"
+                       HorizontalAlignment="Center" Margin="0,8,0,4"
+                       Foreground="{StaticResource MutedTextBrush}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Контур"
+                       HorizontalAlignment="Center" Margin="0,8,0,4"
+                       Foreground="{StaticResource MutedTextBrush}"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Результат"
+                       HorizontalAlignment="Center" Margin="0,8,0,4"
+                       Foreground="{StaticResource MutedTextBrush}"/>
+
+            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardBorder}">
+                <Image Source="{Binding SourceImage}" Stretch="Uniform" Margin="4"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardBorder}">
+                <Image Source="{Binding ContourImage}" Stretch="Uniform" Margin="4"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource CardBorder}">
+                <Image Source="{Binding ResultImage}" Stretch="Uniform" Margin="4"/>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>

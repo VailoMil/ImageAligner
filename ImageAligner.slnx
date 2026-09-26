@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/ImageAligner.Core/ImageAligner.Core.csproj" />
+  <Project Path="src/ImageAligner.Cli/ImageAligner.Cli.csproj" />
+  <Project Path="src/ImageAligner.Wpf/ImageAligner.Wpf.csproj" />
+  <Project Path="tests/ImageAligner.Tests/ImageAligner.Tests.csproj" />
+</Solution>

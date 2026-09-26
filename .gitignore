@@ -1,0 +1,23 @@
+# .NET build
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# VS Code — оставляем только launch/tasks
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+
+# Rider
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults/
+*.trx
