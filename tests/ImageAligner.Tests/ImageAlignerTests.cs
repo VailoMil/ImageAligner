@@ -10,7 +10,6 @@ public class ImageAlignerTests
     [Fact]
     public async Task Detect_FindsRectangle_OnPlainBackground()
     {
-        // 600x450, чёткий чёрный прямоугольник на сером фоне
         using var bmp = new Bitmap(600, 450);
         using (var g = Graphics.FromImage(bmp))
         {
@@ -21,19 +20,15 @@ public class ImageAlignerTests
         }
 
         var aligner = new ImageAligner.Core.Imaging.ImageAligner();
-        var contour = await aligner.DetectContourAsync(bmp, new AlignOptions
+        var result = await aligner.DetectAllAsync(bmp, new AlignOptions
         {
             MinContourAreaRatio = 0.02,
             MaxWorkingSize = 2000
         });
 
-        // Главное — контур вообще найден
-        Assert.NotNull(contour);
-
-        // Площадь прямоугольника 440*330 = 145200.
-        // Допускаем, что контур может быть чуть больше или меньше из-за морфологии.
-        Assert.True(contour!.Area > 145200 * 0.3,
-            $"Area = {contour.Area}, ожидалось > {145200 * 0.3}");
+        Assert.NotNull(result);
+        Assert.True(result!.Outer.Area > 440 * 330 * 0.3,
+            $"Area = {result.Outer.Area}, ожидалось > {440 * 330 * 0.3}");
     }
 
     [Fact]

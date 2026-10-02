@@ -15,9 +15,9 @@ aligner.Progress += (_, e) => Console.WriteLine($"[{e.Progress:P0}] {e.Stage}");
 
 using var bmp = new Bitmap(opts.Input);
 var detect = new AlignOptions { MaxWorkingSize = 2000 };
-var contour = await aligner.DetectContourAsync(bmp, detect);
+var detection = await aligner.DetectAllAsync(bmp, detect);
 
-if (contour is null)
+if (detection is null)
 {
     Console.WriteLine("Контур не найден");
     return;
@@ -26,7 +26,7 @@ if (contour is null)
 if (opts.DetectOnly)
 {
     var outPath = opts.Output ?? "contour.png";
-    using var overlay = OverlayRenderer.DrawContour(bmp, contour, Color.Lime);
+    using var overlay = OverlayRenderer.DrawContours(bmp, detection, Color.Lime, Color.Orange);
     overlay.Save(outPath);
     Console.WriteLine($"Сохранено: {outPath}");
     return;
@@ -41,7 +41,7 @@ if (opts.Rotate is double angle)
     return;
 }
 
-var result = await aligner.AlignAsync(bmp, contour, detect);
+var result = await aligner.AlignAsync(bmp, detection.Outer, detect);
 var final = opts.Output ?? "aligned.png";
 result.Cropped.Save(final);
 Console.WriteLine($"Сохранено: {final}");
